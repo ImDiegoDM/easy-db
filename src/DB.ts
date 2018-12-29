@@ -19,7 +19,9 @@ export enum RelationshipTypes {
 
 export interface IDbRelationship {
   type: RelationshipTypes;
-  table: {};
+  table: string;
+  fields: any;
+  hasTimestamps: boolean;
 }
 
 export interface IDbRelationshipData {
@@ -34,6 +36,41 @@ export interface IDbRelationshipIterator {
 export interface IPage {
   actual: number;
   elements: number;
+}
+
+function tableWhere(tableName: string, fields: any, whereSql: string, hasTimestamps: boolean = false): Promise<any[]> {
+  return new Promise((resolve, reject) => {
+    const query = connection.query(
+      `SELECT ${mapFields(tableName, fields, hasTimestamps)} FROM ${tableName} WHERE ${whereSql};`,
+      (err, result, field) => {
+        if (err) { reject(err); }
+
+        resolve(result);
+      },
+    );
+  });
+}
+
+function isHidden(field: string): boolean {
+  return field.indexOf('hidden') !== -1;
+}
+
+function mapFields(tableName: string, fields: any, hasTimestamps: boolean = false, toSave: boolean = false): string {
+  let fieldString = toSave ? '' : `${tableName}.id, `;
+  const joins: string[] = [];
+
+  for (const key in fields) {
+    const element = fields[key];
+    if (!isHidden(element) || toSave) {
+      fieldString += toSave ? `${key}, ` : `${tableName}.${key}, `;
+    }
+  }
+
+  if (hasTimestamps) {
+    fieldString += `${tableName}.created_at, ${tableName}.modified_at, `;
+  }
+
+  return fieldString.slice(0, -2);
 }
 
 export class DB {
@@ -148,7 +185,7 @@ export class DB {
         pageQuery = ` LIMIT ${page.actual * page.elements},${page.elements}`;
       }
       connection.query(
-        `SELECT ${this.mapFields()} 
+        `SELECT ${mapFields(this.tableName, this.fields, this.hasTimestamps)} 
         FROM ${this.tableName} 
         ORDER BY ${this.tableName}.id DESC${pageQuery};`,
         async (err, result, field) => {
@@ -169,7 +206,7 @@ export class DB {
   public static get(id: string|number): Promise<any> {
     return new Promise((resolve, reject) => {
       const query = connection.query({
-        sql: `SELECT ${this.mapFields()} FROM ${this.tableName} WHERE id = ?;`,
+        sql: `SELECT ${mapFields(this.tableName, this.fields, this.hasTimestamps)} FROM ${this.tableName} WHERE id = ?;`,
         values: [id],
       }, 
       async (err, result, field) => {
@@ -190,7 +227,7 @@ export class DB {
     return new Promise((resolve, reject) => {
       if (Array.isArray(values)) {
         const query = connection.query(
-          `INSERT INTO ${this.tableName} (${this.mapFields(true)}) VALUES ?`,
+          `INSERT INTO ${this.tableName} (${mapFields(this.tableName, this.fields, this.hasTimestamps, true)}) VALUES ?`,
           [this.toArray(values)],
           (err, result) => {
           if (err) { reject(err); }
@@ -224,37 +261,6 @@ export class DB {
     });
   }
 
-  private static mapFields(toSave: boolean = false): string {
-    let fields = toSave ? '' : `${this.tableName}.id, `;
-    const joins: string[] = [];
-
-    for (const key in this.fields) {
-      const element = this.fields[key];
-      if (!this.isHidden(element) || toSave) {
-        fields += toSave ? `${key}, ` : `${this.tableName}.${key}, `;
-      }
-    }
-
-    if (this.hasTimestamps) {
-      fields += `${this.tableName}.created_at, ${this.tableName}.modified_at, `;
-    }
-
-    return fields.slice(0, -2);
-  }
-
-  private static where(whereSql: string): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      const query = connection.query(
-        `SELECT ${this.mapFields()} FROM ${this.tableName} WHERE ${whereSql};`,
-        (err, result, field) => {
-          if (err) { reject(err); }
-
-          resolve(result);
-        },
-      );
-    });
-  }
-
   private static async mapRealantionships(ids: string[]): Promise<IDbRelationshipIterator> {
     const relantionships: IDbRelationshipIterator = {};
     for (const key in this.relantionships) {
@@ -263,19 +269,19 @@ export class DB {
         case 'hasOne':
           relantionships[key] = {
             type: RelationshipTypes.hasOne, 
-            data: await this.hasOne(element.table, ids),
+            data: await this.hasOne(element.table, element.fields, ids, element.hasTimestamps),
           };
           break;
         case 'hasMany':
           relantionships[key] = {
             type: RelationshipTypes.hasMany, 
-            data: await this.hasMany(element.table, ids),
+            data: await this.hasMany(element.table, element.fields, ids, element.hasTimestamps),
           };
           break;
         case 'belongsTo':
           relantionships[key] = {
             type: RelationshipTypes.belongsTo, 
-            data: await this.belongsTo(element.table, ids),
+            data: await this.belongsTo(element.table, element.fields, ids, element.hasTimestamps),
           };
           break;
       }
@@ -284,10 +290,10 @@ export class DB {
     return relantionships;
   }
 
-  private static hasOne(table: any, ids: string[]): Promise<any> {
+  private static hasOne(table: string, fields: any, ids: string[], hasTimestamps: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
-      table.where(DB.mapWhereIds(`${this.tableName}_id`, ids) + 
-      ` ORDER BY ${table.tableName}.id LIMIT 1`).then((result: any) => {
+      tableWhere(table, fields, DB.mapWhereIds(`${this.tableName}_id`, ids) + 
+      ` ORDER BY ${table}.id LIMIT 1`, hasTimestamps).then((result: any) => {
         resolve(result);
       }).catch((err: any) => {
         reject(err);
@@ -295,9 +301,9 @@ export class DB {
     });
   }
 
-  private static hasMany(table: any, ids: string[]): Promise<any> {
+  private static hasMany(table: string, fields: string, ids: string[], hasTimestamps: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
-      table.where(DB.mapWhereIds(`${this.tableName}_id`, ids)).then((result: any) => {
+      tableWhere(table, fields, DB.mapWhereIds(`${this.tableName}_id`, ids), hasTimestamps).then((result: any) => {
         resolve(result);
       }).catch((err: any) => {
         reject(err);
@@ -305,13 +311,13 @@ export class DB {
     });
   }
 
-  private static belongsTo(table: any, ids: string[]): Promise<any> {
+  private static belongsTo(table: string, fields: any, ids: string[], hasTimestamps: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
 
       const sql = connection.query(
-        `SELECT ${table.mapFields()}, ${this.tableName}.id as belongsTo
-        FROM ${table.tableName} 
-        INNER JOIN ${this.tableName} ON ${table.tableName}.id = ${this.tableName}.${table.tableName}_id
+        `SELECT ${mapFields(table, fields, hasTimestamps)}, ${this.tableName}.id as belongsTo
+        FROM ${table} 
+        INNER JOIN ${this.tableName} ON ${table}.id = ${this.tableName}.${table}_id
         WHERE ${this.mapWhereIds(`${this.tableName}.id`, ids)};`,
         (err, result, field) => {
           if (err) { reject(err); }
@@ -344,10 +350,6 @@ export class DB {
     }
 
     return [fields.slice(0, -2), valuesArray];
-  }
-
-  private static isHidden(field: string): boolean {
-    return field.indexOf('hidden') !== -1;
   }
 
   protected connection = connection;

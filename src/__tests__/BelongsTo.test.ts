@@ -21,7 +21,12 @@ class PhonesBT extends DB {
   public static relantionships = {
     usersBT: {
       type: RelationshipTypes.belongsTo,
-      table: UsersBT,
+      table: 'usersBT',
+      fields: {
+        name: '',
+        email: '',
+      },
+      hasTimestamps: false,
     },
   };
 }

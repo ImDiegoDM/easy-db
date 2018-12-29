@@ -20,7 +20,12 @@ class UsersHO extends DB {
   public static relantionships = {
     phonesHO: {
       type: RelationshipTypes.hasOne,
-      table: PhonesHO,
+      table: 'phonesHO',
+      fields: {
+        number: '',
+        usersHO_id: '',
+      },
+      hasTimestamps: false,
     },
   };
 }

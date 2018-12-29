@@ -9,6 +9,9 @@
       "no-trailing-whitespace":false,
       "forin":false,
       "radix":false,
-      "variable-name":false
+      "variable-name":false,
+      "max-line-length" : {
+        "options": [200]
+      },
     }
 }

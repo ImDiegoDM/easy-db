@@ -20,7 +20,12 @@ class Peoples extends DB {
   public static relantionships = {
     cells: {
       type: RelationshipTypes.hasMany,
-      table: Cells,
+      table: 'cells',
+      fields : {
+        number: '',
+        peoples_id: '',
+      },
+      hasTimestamps: false,
     },
   };
 }

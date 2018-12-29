@@ -132,7 +132,7 @@ describe('Testing if is generating the correct querys', () => {
     TestQuery.get(1);
     
     expect((connection.query as any).mock.calls[0][0]).toEqual({
-      sql: 'SELECT test.id, test.email FROM test WHERE id = ?;',
+      sql: `SELECT test.id, test.email FROM test WHERE id = ?;`,
       values: [1],
     });
   });
@@ -181,7 +181,7 @@ describe('Testing if is generating the correct querys', () => {
       },
     ]);
     
-    expect((connection.query as any).mock.calls[0][0]).toEqual('INSERT INTO test (name, test_id, email) VALUES ?');
+    expect((connection.query as any).mock.calls[0][0]).toEqual(`INSERT INTO test (name, test_id, email) VALUES ?`);
     expect((connection.query as any).mock.calls[0][1]).toEqual([[
       ['diego', '2', 'contato@diegomatias.com.br'],
       ['matias', '2', 'email@diegomatias.com.br'],
