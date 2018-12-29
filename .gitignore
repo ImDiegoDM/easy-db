@@ -3,3 +3,6 @@ node_modules/
 
 # dotenv variable
 *.env
+
+#dist folder
+dist/

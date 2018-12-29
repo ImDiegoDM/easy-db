@@ -1,5 +1,5 @@
 Arguments: 
-  S:\Program Files\nodejs\node.exe S:\Program Files (x86)\Yarn\bin\yarn.js test
+  S:\Program Files\nodejs\node.exe S:\Program Files (x86)\Yarn\bin\yarn.js commit
 
 PATH: 
   S:\ProgramData\DockerDesktop\version-bin;S:\Program Files\Docker\Docker\Resources\bin;S:/Users/Diego/AppData/Roaming/Composer/vendor/bin;S:\ProgramData\ComposerSetup\bin;S:\WINDOWS\system32;S:\WINDOWS;S:\WINDOWS\System32\Wbem;S:\WINDOWS\System32\WindowsPowerShell\v1.0\;S:\Program Files (x86)\GtkSharp\2.12\bin;S:\Program Files\Microsoft SQL Server\130\Tools\Binn\;S:\Program Files\dotnet\;S:\Program Files\Git\cmd;S:\Users\Diego\AppData\Roaming\nvm;S:\Program Files\nodejs;S:\Program Files (x86)\Yarn\bin\;C:\wamp64\bin\php\php7.1.9;;S:\WINDOWS\System32\OpenSSH\;C:\Ruby24-x64\bin;S:\Users\Diego\AppData\Roaming\Composer\vendor\bin;S:\Users\Diego\AppData\Local\atom\bin;S:\Users\Diego\AppData\Local\Microsoft\WindowsApps;S:\Users\Diego\AppData\Roaming\npm;S:\Users\Diego\AppData\Local\GitHubDesktop\bin;C:\androidSDk;C:\Gradle\gradle-4.1\bin;S:\Program Files (x86)\Java\jdk1.8.0_131\bin;S:\Users\Diego\AppData\Local\Microsoft\WindowsApps;C:\Downloads\curl-7.58.0-win64-mingw\bin;S:\Users\Diego\AppData\Roaming\nvm;S:\Program Files\nodejs;S:\Users\Diego\AppData\Local\Yarn\bin;;C:\Microsoft VS Code\vscode\bin
@@ -16,12 +16,13 @@ Platform:
 npm manifest: 
   {
     "name": "easy-db",
-    "version": "0.0.0",
+    "version": "0.0.0-development",
     "description": "A micro framework for working with database in node",
     "main": "index.js",
     "scripts": {
       "test": "jest",
-      "commit": "git-cz"
+      "commit": "git-cz",
+      "semantic-release": "semantic-release"
     },
     "keywords": [
       "node",
@@ -43,12 +44,17 @@ npm manifest:
       "@types/moment": "^2.13.0",
       "@types/mysql": "^2.15.5",
       "cz-conventional-changelog": "^2.1.0",
-      "ts-jest": "^23.10.5"
+      "ts-jest": "^23.10.5",
+      "semantic-release": "^15.13.2"
     },
     "config": {
       "commitizen": {
         "path": "./node_modules/cz-conventional-changelog"
       }
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/ImDiegoDM/easy-db.git"
     }
   }
 
@@ -62,7 +68,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: S:\WINDOWS\system32\cmd.exe
-  Arguments: /d /s /c jest
+  Arguments: /d /s /c git-cz
   Directory: C:\Documents\Projetos\easy-db
   Output:
   
