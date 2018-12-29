@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Relantionship has one test should return phone and his relantionships 1`] = `
+Array [
+  RowDataPacket {
+    "email": "contato@diegomatias.com.br",
+    "id": 1,
+    "name": "diego",
+  },
+]
+`;
