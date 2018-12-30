@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Relantionship has one test should return phone and his relantionships 1`] = `
+Array [
+  RowDataPacket {
+    "id": 3,
+    "number": "65654",
+    "usersBTM": Array [
+      RowDataPacket {
+        "email": "contato@diegomatias.com.br",
+        "id": 1,
+        "name": "diego",
+      },
+    ],
+  },
+  RowDataPacket {
+    "id": 2,
+    "number": "32132654",
+    "usersBTM": Array [
+      RowDataPacket {
+        "email": "contato@diegomatias.com.br",
+        "id": 2,
+        "name": "douglas",
+      },
+    ],
+  },
+  RowDataPacket {
+    "id": 1,
+    "number": "124654131",
+    "usersBTM": Array [
+      RowDataPacket {
+        "email": "contato@diegomatias.com.br",
+        "id": 1,
+        "name": "diego",
+      },
+    ],
+  },
+]
+`;
+
+exports[`Relantionship has one test should return phone and his relantionships 2`] = `
+Array [
+  RowDataPacket {
+    "email": "contato@diegomatias.com.br",
+    "id": 2,
+    "name": "douglas",
+    "phonesBTM": Array [
+      RowDataPacket {
+        "id": 2,
+        "number": "32132654",
+      },
+    ],
+  },
+  RowDataPacket {
+    "email": "contato@diegomatias.com.br",
+    "id": 1,
+    "name": "diego",
+    "phonesBTM": Array [
+      RowDataPacket {
+        "id": 1,
+        "number": "124654131",
+      },
+      RowDataPacket {
+        "id": 3,
+        "number": "65654",
+      },
+    ],
+  },
+]
+`;

@@ -73,6 +73,18 @@ function mapFields(tableName: string, fields: any, hasTimestamps: boolean = fals
   return fieldString.slice(0, -2);
 }
 
+function ManyToManyTableName(tablesName: string[]){
+  const sorted = tablesName.sort(function (a,b){
+    if (a.toLowerCase() < b.toLowerCase())
+      return -1;
+    if ( a.toLowerCase() > b.toLowerCase())
+      return 1;
+    return 0;
+  });
+
+  return `${sorted[0]}_${sorted[1]}`;
+}
+
 export class DB {
   
   public static tableName: string;
@@ -149,6 +161,7 @@ export class DB {
               }
             }
             break;
+          case 'belongsToMany':
           case 'belongsTo':
             objsClone = objsClone.map((obj: any) => {
               obj[key] = [];
@@ -284,6 +297,11 @@ export class DB {
             data: await this.belongsTo(element.table, element.fields, ids, element.hasTimestamps),
           };
           break;
+        case 'belongsToMany':
+          relantionships[key] = {
+            type: RelationshipTypes.belongsToMany, 
+            data: await this.belongsToMany(element.table, element.fields, ids, element.hasTimestamps),
+          };
       }
     }
 
@@ -298,6 +316,33 @@ export class DB {
       }).catch((err: any) => {
         reject(err);
       });
+    });
+  }
+
+  public static atach(id:string, table: string, atach_id:string): Promise<any>{
+    const joinTableName = ManyToManyTableName([table, this.tableName]);
+    return new Promise((resolve,reject)=>{
+      connection.query(
+        `SELECT ${joinTableName}.${this.tableName}_id, ${joinTableName}.${table}_id
+        FROM ${joinTableName}
+        WHERE ${joinTableName}.${this.tableName}_id = ? AND ${joinTableName}.${table}_id = ? ;`,[id,atach_id],
+        (err, result, field) => {
+          if (err) { reject(err); }
+          if(result.length==0){
+            const query = connection.query(
+              `INSERT INTO ${joinTableName} SET ${joinTableName}.${this.tableName}_id = ?, ${joinTableName}.${table}_id = ?`,
+              [id,atach_id], (err, result) => {
+                if (err) { reject(err); }
+    
+                resolve();
+              }
+            );
+          }
+          else{
+            resolve();
+          }
+        },
+      );
     });
   }
 
@@ -327,8 +372,20 @@ export class DB {
     });
   }
 
-  private static belongsToMany(table: any): string {
-    return `not implemented yet`;
+  private static belongsToMany(table: string, fields: any, ids: string[], hasTimestamps: boolean, table_name?: string): Promise<any> {
+    const joinTableName = table_name ? table_name : ManyToManyTableName([table, this.tableName]);
+    return new Promise((resolve, reject)=>{
+      connection.query(
+        `SELECT ${mapFields(table, fields, hasTimestamps)}, ${joinTableName}.${this.tableName}_id as belongsTo
+        FROM ${table} 
+        INNER JOIN ${joinTableName} ON ${table}.id = ${joinTableName}.${table}_id
+        WHERE ${this.mapWhereIds(`${joinTableName}.${this.tableName}_id`, ids)};`,
+        (err, result, field) => {
+          if (err) { reject(err); }
+          resolve(result);
+        },
+      );
+    });
   }
 
   private static mapFieldsValues(values: any, id?: string|number) {
