@@ -1,5 +1,5 @@
 Arguments: 
-  S:\Program Files\nodejs\node.exe S:\Program Files (x86)\Yarn\bin\yarn.js test BelongsToMany
+  S:\Program Files\nodejs\node.exe S:\Program Files (x86)\Yarn\bin\yarn.js semantic-release
 
 PATH: 
   S:\ProgramData\DockerDesktop\version-bin;S:\Program Files\Docker\Docker\Resources\bin;S:/Users/Diego/AppData/Roaming/Composer/vendor/bin;S:\ProgramData\ComposerSetup\bin;S:\WINDOWS\system32;S:\WINDOWS;S:\WINDOWS\System32\Wbem;S:\WINDOWS\System32\WindowsPowerShell\v1.0\;S:\Program Files (x86)\GtkSharp\2.12\bin;S:\Program Files\Microsoft SQL Server\130\Tools\Binn\;S:\Program Files\dotnet\;S:\Program Files\Git\cmd;S:\Users\Diego\AppData\Roaming\nvm;S:\Program Files\nodejs;S:\Program Files (x86)\Yarn\bin\;C:\wamp64\bin\php\php7.1.9;;S:\WINDOWS\System32\OpenSSH\;C:\Ruby24-x64\bin;S:\Users\Diego\AppData\Roaming\Composer\vendor\bin;S:\Users\Diego\AppData\Local\atom\bin;S:\Users\Diego\AppData\Local\Microsoft\WindowsApps;S:\Users\Diego\AppData\Roaming\npm;S:\Users\Diego\AppData\Local\GitHubDesktop\bin;C:\androidSDk;C:\Gradle\gradle-4.1\bin;S:\Program Files (x86)\Java\jdk1.8.0_131\bin;S:\Users\Diego\AppData\Local\Microsoft\WindowsApps;C:\Downloads\curl-7.58.0-win64-mingw\bin;S:\Users\Diego\AppData\Roaming\nvm;S:\Program Files\nodejs;S:\Users\Diego\AppData\Local\Yarn\bin;;C:\Microsoft VS Code\vscode\bin
@@ -23,6 +23,10 @@ npm manifest:
       "test": "jest",
       "commit": "git-cz",
       "semantic-release": "semantic-release"
+    },
+    "release": {
+      "dryRun": true,
+      "ci": false
     },
     "keywords": [
       "node",
@@ -68,7 +72,7 @@ Trace:
   Error: Command failed.
   Exit code: 1
   Command: S:\WINDOWS\system32\cmd.exe
-  Arguments: /d /s /c jest BelongsToMany
+  Arguments: /d /s /c semantic-release
   Directory: C:\Documents\Projetos\easy-db
   Output:
   

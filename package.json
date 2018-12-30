@@ -8,6 +8,10 @@
     "commit": "git-cz",
     "semantic-release": "semantic-release"
   },
+  "release": {
+    "dryRun": true,
+    "ci": false
+  },
   "keywords": [
     "node",
     "mysql"
